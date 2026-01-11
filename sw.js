@@ -1,6 +1,6 @@
 // Service Worker for Morse Code Trainer PWA
 
-const CACHE_NAME = 'morse-trainer-v3';
+const CACHE_NAME = 'morse-trainer-v10';
 const urlsToCache = [
   './',
   './index.html',

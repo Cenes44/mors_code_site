@@ -4,7 +4,7 @@
 ![Sürüm](https://img.shields.io/badge/sürüm-1.0.0-green.svg)
 ![Durum](https://img.shields.io/badge/durum-Yayında-success.svg)
 
-Mors kodunu öğrenmek, pratik yapmak ve dönüştürmek için tasarlanmış modern, etkileşimli bir "Progressive Web App" (PWA) uygulaması. Saf JavaScript (Vanilla JS) ile geliştirilen bu araç; çift yönlü çeviri, sesli oynatma/dışa aktarma, ses analizi ve özel pratik modu sunar.
+Mors kodunu öğrenmek ve dönüştürmek için tasarlanmış modern, etkileşimli bir "Progressive Web App" (PWA) uygulaması. Saf JavaScript (Vanilla JS) ile geliştirilen bu araç; çift yönlü çeviri, sesli oynatma/dışa aktarma ve ses analizi sunar.
 
 ## ✨ Özellikler
 
@@ -12,9 +12,7 @@ Mors kodunu öğrenmek, pratik yapmak ve dönüştürmek için tasarlanmış mod
 - **Sesli & Görsel Geri Bildirim:**
   - Ayarlanabilir frekans ve hız (WPM) ile yüksek hassasiyetli ses oynatma.
   - 🎵 **Dışa Aktar (WAV):** Mors kodunuzu yüksek kaliteli WAV ses dosyası olarak indirin.
-  - 🎥 **Dışa Aktar (Video):** Mors kodunuzun görselleştirilmiş videosunu (WebM) oluşturun.
-- **İçe Aktar & Çöz:** Ses dosyalarını (WAV/MP3) yükleyerek Mors sinyallerini analiz edin ve metne çevirin.
-- **Pratik Modu:** Becerilerinizi test etmek için rastgele harf veya kelimeler üretin.
+- **İçe Aktar & Çöz:** Ses dosyalarını (WAV) yükleyerek Mors sinyallerini analiz edin ve metne çevirin.
 - **PWA Desteği:** Mobil ve masaüstü cihazlara kurulabilir, çevrimdışı çalışabilir.
 - **Kişiselleştirilebilir:**
   - Ayarlanabilir WPM (Dakikadaki Kelime Sayısı).
@@ -38,11 +36,6 @@ Mors kodunu öğrenmek, pratik yapmak ve dönüştürmek için tasarlanmış mod
 1. **İçe / Dışa Aktar** bölümüne gidin.
 2. Bir Mors kodu ses dosyası seçin.
 3. **Analiz Et ve Çöz** butonuna tıklayın.
-
-### Pratik Modu
-1. **Rastgele Karakter/Kelime Üret** butonuna tıklayın.
-2. Çıkan sesi dinleyin veya metni çevirmeye çalışın.
-3. Cevabınızı yazıp kontrol edin!
 
 ## 💻 Teknolojiler
 

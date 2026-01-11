@@ -8,11 +8,7 @@ const translations = {
     morseLabel: "Morse Code:",
     playSoundText: "Play Sound",
     playSoundText: "Play Sound",
-    practiceTitle: "Practice Mode",
-    generatedText: "Generated character/word:",
-    generateBtnText: "Generate Random Character/Word",
-    answerInputLabel: "Enter Morse code (use . and -):",
-    checkAnswerText: "Check Answer",
+    playSoundText: "Play Sound",
     speedLabel: "Speed (WPM):",
     freqLabel: "Frequency (Hz):",
     vibrationLabel: "Vibration (Mobile):",
@@ -21,9 +17,13 @@ const translations = {
     referenceTitle: "Morse Code Reference",
     exportTitle: "Import / Export",
     downloadAudioText: "Download Audio (WAV)",
-    downloadVideoText: "Download Video (WebM)",
-    uploadLabel: "Upload Audio/Video to Decode:",
-    analyzeText: "Analyze & Decode"
+    uploadLabel: "Upload Audio to Decode:",
+    analyzeText: "Analyze & Decode",
+    analysisComplete: "Analysis Complete",
+    analysisError: "Error: ",
+    invalidFileType: "Invalid file type. Please upload an audio file.",
+    generatingAudio: "Generating...",
+    analyzing: "Analyzing..."
   },
   tr: {
     mainTitle: "Mors Kodu Öğrenici - Uygulama ve Pratik",
@@ -33,11 +33,7 @@ const translations = {
     morseLabel: "Mors Kodu:",
     playSoundText: "Ses Çal",
     playSoundText: "Ses Çal",
-    practiceTitle: "Pratik Modu",
-    generatedText: "Oluşturulan karakter/kelime:",
-    generateBtnText: "Rastgele Karakter/Kelime Üret",
-    answerInputLabel: "Mors kodunu girin (. ve - kullanın):",
-    checkAnswerText: "Cevabı Kontrol Et",
+    playSoundText: "Ses Çal",
     speedLabel: "Hız (WPM):",
     freqLabel: "Frekans (Hz):",
     vibrationLabel: "Titreşim (Mobil):",
@@ -46,9 +42,13 @@ const translations = {
     referenceTitle: "Mors Kodu Referansı",
     exportTitle: "İçe / Dışa Aktar",
     downloadAudioText: "Ses İndir (WAV)",
-    downloadVideoText: "Video İndir (WebM)",
-    uploadLabel: "Çözümlenecek Ses/Video Yükle:",
-    analyzeText: "Analiz Et ve Çöz"
+    uploadLabel: "Çözümlenecek Ses Dosyası Yükle:",
+    analyzeText: "Analiz Et ve Çöz",
+    analysisComplete: "Analiz Tamamlandı",
+    analysisError: "Hata: ",
+    invalidFileType: "Geçersiz dosya türü. Lütfen bir ses dosyası yükleyin.",
+    generatingAudio: "Oluşturuluyor...",
+    analyzing: "Analiz ediliyor..."
   }
 };
 
@@ -78,9 +78,40 @@ class MorseEngine {
     this.wpm = 20; // Words per minute
     this.frequency = 600; // Frequency in Hz
     this.dotDuration = this.calculateDotDuration();
+
   }
 
-  // Generate WAV file from morse code
+
+
+
+
+
+
+  initAudioContext() {
+    // Initialize audio context on user interaction to comply with autoplay policies
+    const init = () => {
+      if (!this.ctx) {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      document.body.removeEventListener('click', init);
+      document.body.removeEventListener('touchstart', init);
+    };
+
+    document.body.addEventListener('click', init);
+    document.body.addEventListener('touchstart', init);
+  }
+
+  calculateDotDuration() {
+    // Standard formula: 1.2 / WPM seconds for a dot
+    return (1.2 / this.wpm) * 1000; // Convert to milliseconds
+  }
+
+  updateSettings(wpm, frequency) {
+    this.wpm = wpm;
+    this.frequency = frequency;
+    this.dotDuration = this.calculateDotDuration();
+  }
+
   // Generate WAV file from morse code
   async generateWav(morseString) {
     if (!morseString) return null;
@@ -142,95 +173,26 @@ class MorseEngine {
     }
   }
 
-  // Export video (WebM)
-  async exportVideoFromMorse(morseString) {
-    if (!morseString) return null;
-
-    const width = 640;
-    const height = 480;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-
-    const stream = canvas.captureStream(30); // 30 FPS
-    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-    const chunks = [];
-
-    recorder.ondataavailable = e => chunks.push(e.data);
-
-    return new Promise(async (resolve, reject) => {
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        resolve(blob);
-      };
-
-      recorder.start();
-
-      // Animation Logic
-      const morseChars = morseString.split('');
-
-      // Draw background
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      for (const char of morseChars) {
-        if (char === '.' || char === '-') {
-          // LIGHT ON
-          ctx.fillStyle = 'yellow';
-          ctx.beginPath();
-          ctx.arc(width / 2, height / 2, 100, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Wait duration
-          const duration = char === '.' ? this.dotDuration : (this.dotDuration * 3);
-          await new Promise(r => setTimeout(r, duration));
-
-          // LIGHT OFF
-          ctx.fillStyle = 'black';
-          ctx.fillRect(0, 0, width, height);
-
-          // Wait gap
-          await new Promise(r => setTimeout(r, this.dotDuration));
-
-        } else if (char === ' ') {
-          await new Promise(r => setTimeout(r, this.dotDuration * 2));
-        } else if (char === '/') {
-          await new Promise(r => setTimeout(r, this.dotDuration * 6));
-        }
-      }
-
-      // End padding
-      await new Promise(r => setTimeout(r, 1000));
-      recorder.stop();
-
-    });
-  }
-
-  // Basic Audio Decoding (Amplitude Thresholding)
+  // Basic Audio Decoding
   async decodeAudioFromBuffer(arrayBuffer) {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     }
-    // Resume context if suspended
     if (this.ctx.state === 'suspended') await this.ctx.resume();
 
     try {
       const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
-      const channelData = audioBuffer.getChannelData(0); // Use first channel
+      const channelData = audioBuffer.getChannelData(0);
       const sampleRate = audioBuffer.sampleRate;
-
-      // Analysis params
-      const threshold = 0.1; // Amplitude threshold
-      const chunkMs = 10; // Analyze in 10ms chunks
+      const threshold = 0.1;
+      const chunkMs = 10;
       const samplesPerChunk = Math.floor(sampleRate * chunkMs / 1000);
 
       let state = 'OFF';
-      let durations = []; // { type: 'ON'|'OFF', duration: ms }
+      let durations = [];
       let currentDuration = 0;
 
       for (let i = 0; i < channelData.length; i += samplesPerChunk) {
-        // Get max amplitude in this chunk
         let maxAmp = 0;
         for (let j = 0; j < samplesPerChunk && (i + j) < channelData.length; j++) {
           maxAmp = Math.max(maxAmp, Math.abs(channelData[i + j]));
@@ -239,7 +201,6 @@ class MorseEngine {
         const isSignal = maxAmp > threshold;
 
         if ((state === 'OFF' && isSignal) || (state === 'ON' && !isSignal)) {
-          // State flip
           if (currentDuration > 0) {
             durations.push({ type: state, duration: currentDuration });
           }
@@ -248,43 +209,31 @@ class MorseEngine {
         }
         currentDuration += chunkMs;
       }
-      // Push last
       if (currentDuration > 0) durations.push({ type: state, duration: currentDuration });
 
-      // Decode logic (Adaptive)
-      // Find 'dot' length. Usually shortest ON duration > some noise floor
       const onDurations = durations.filter(d => d.type === 'ON' && d.duration > 20).map(d => d.duration);
       if (onDurations.length === 0) return "No signal detected";
 
       onDurations.sort((a, b) => a - b);
-      // Simple clustering: take lower quartile as dot duration reference
       const dotRef = onDurations[Math.floor(onDurations.length * 0.25)];
-
-      // Threshold between dot and dash usually roughly 2 * dotRef to 2.5 * dotRef
       const dashThreshold = dotRef * 2.2;
 
       let result = "";
 
       for (const d of durations) {
         if (d.type === 'ON') {
-          if (d.duration < 20) continue; // Noise
+          if (d.duration < 20) continue;
           if (d.duration < dashThreshold) result += ".";
           else result += "-";
         } else {
-          // OFF
-          // Inter-element (1 dot): ignore
-          // Letter gap (3 dots): space
-          // Word gap (7 dots): /
           if (d.duration > dotRef * 5) result += " / ";
           else if (d.duration > dotRef * 2.2) result += " ";
         }
       }
-
       return result.trim();
-
     } catch (e) {
-      console.error("Decoding error detected:", e);
-      throw new Error("Could not decode audio. Ensure it is a valid WAV/MP3 file.");
+      console.error("Decoding error:", e);
+      throw new Error("Could not decode audio.");
     }
   }
 
@@ -302,30 +251,29 @@ class MorseEngine {
 
     // write WAVE header
     setUint32(0x46464952); // "RIFF"
-    setUint32(length - 8); // file length - 8
+    setUint32(length - 8);
     setUint32(0x45564157); // "WAVE"
 
     setUint32(0x20746d66); // "fmt " chunk
-    setUint32(16); // length = 16
-    setUint16(1); // PCM (uncompressed)
+    setUint32(16);
+    setUint16(1);
     setUint16(numOfChan);
     setUint32(abuffer.sampleRate);
-    setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-    setUint16(numOfChan * 2); // block-align
-    setUint16(16); // 16-bit (hardcoded in this example)
+    setUint32(abuffer.sampleRate * 2 * numOfChan);
+    setUint16(numOfChan * 2);
+    setUint16(16);
 
     setUint32(0x61746164); // "data" - chunk
-    setUint32(length - pos - 4); // chunk length
+    setUint32(length - pos - 4);
 
-    // write interleaved data
     for (i = 0; i < abuffer.numberOfChannels; i++)
       channels.push(abuffer.getChannelData(i));
 
     while (pos < abuffer.length) {
-      for (i = 0; i < numOfChan; i++) { // interleave channels
-        sample = Math.max(-1, Math.min(1, channels[i][pos])); // clamp
-        sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0; // scale to 16-bit signed int
-        view.setInt16(44 + offset, sample, true); // write 16-bit sample
+      for (i = 0; i < numOfChan; i++) {
+        sample = Math.max(-1, Math.min(1, channels[i][pos]));
+        sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+        view.setInt16(44 + offset, sample, true);
         offset += 2;
       }
       pos++;
@@ -342,31 +290,6 @@ class MorseEngine {
       view.setUint32(pos, data, true);
       pos += 4;
     }
-  }
-
-  initAudioContext() {
-    // Initialize audio context on user interaction to comply with autoplay policies
-    const init = () => {
-      if (!this.ctx) {
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      document.body.removeEventListener('click', init);
-      document.body.removeEventListener('touchstart', init);
-    };
-
-    document.body.addEventListener('click', init);
-    document.body.addEventListener('touchstart', init);
-  }
-
-  calculateDotDuration() {
-    // Standard formula: 1.2 / WPM seconds for a dot
-    return (1.2 / this.wpm) * 1000; // Convert to milliseconds
-  }
-
-  updateSettings(wpm, frequency) {
-    this.wpm = wpm;
-    this.frequency = frequency;
-    this.dotDuration = this.calculateDotDuration();
   }
 
   encode(text) {
@@ -496,10 +419,10 @@ const morseEngine = new MorseEngine();
 const textInput = document.getElementById('textInput');
 const morseOutput = document.getElementById('morseOutput');
 const playSoundBtn = document.getElementById('playSoundBtn');
-const answerInput = document.getElementById('answerInput');
-const checkAnswerBtn = document.getElementById('checkAnswerBtn');
-const resultMessage = document.getElementById('resultMessage');
-const generatedContent = document.getElementById('generatedContent');
+const answerInput = null;
+const checkAnswerBtn = null;
+const resultMessage = null;
+const generatedContent = null;
 const wpmSlider = document.getElementById('wpmSlider');
 const wpmValue = document.getElementById('wpmValue');
 const frequencySlider = document.getElementById('frequencySlider');
@@ -507,21 +430,16 @@ const freqValue = document.getElementById('freqValue');
 const vibrationToggle = document.getElementById('vibrationToggle');
 const themeToggle = document.getElementById('themeToggle');
 const morseTableContainer = document.getElementById('morseTableContainer');
-// Voice recording elements removed
 const downloadAudioBtn = document.getElementById('downloadAudioBtn');
-const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 const fileInput = document.getElementById('fileInput');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const uploadStatus = document.getElementById('uploadStatus');
 
+
 // Current language
 let currentLang = 'en';
 
-// Sample words for practice
-const sampleWords = [
-  'SOS', 'CAT', 'DOG', 'RUN', 'PLAY', 'HOME', 'WORK', 'HELP',
-  'LOVE', 'TIME', 'WATER', 'FIRE', 'AIR', 'EARTH'
-];
+
 
 // Initialize the app
 function initApp() {
@@ -608,11 +526,7 @@ function updateLanguage(lang) {
   document.getElementById('textLabel').textContent = translations[lang].textLabel;
   document.getElementById('morseLabel').textContent = translations[lang].morseLabel;
   document.getElementById('playSoundText').textContent = translations[lang].playSoundText;
-  document.getElementById('practiceTitle').textContent = translations[lang].practiceTitle;
-  document.getElementById('generatedText').textContent = translations[lang].generatedText;
-  document.getElementById('generateBtnText').textContent = translations[lang].generateBtnText;
-  document.getElementById('answerInputLabel').textContent = translations[lang].answerInputLabel;
-  document.getElementById('checkAnswerText').textContent = translations[lang].checkAnswerText;
+
   document.getElementById('speedLabel').textContent = translations[lang].speedLabel + ` ${wpmSlider.value}`;
   document.getElementById('freqLabel').textContent = translations[lang].freqLabel + ` ${frequencySlider.value}`;
   document.getElementById('vibrationLabel').textContent = translations[lang].vibrationLabel;
@@ -623,7 +537,6 @@ function updateLanguage(lang) {
   // Export/Import translations
   document.getElementById('exportTitle').textContent = translations[lang].exportTitle;
   document.getElementById('downloadAudioText').textContent = translations[lang].downloadAudioText;
-  document.getElementById('downloadVideoText').textContent = translations[lang].downloadVideoText;
   document.getElementById('uploadLabel').textContent = translations[lang].uploadLabel;
   document.getElementById('analyzeText').textContent = translations[lang].analyzeText;
 
@@ -639,9 +552,7 @@ function updateLanguage(lang) {
     ? 'Mors koduna dönüştürmek için metin girin'
     : 'Enter text to convert to Morse code';
 
-  document.getElementById('answerInput').placeholder = lang === 'tr'
-    ? 'Mors kodunu girin (örn: .-. . -. -.)'
-    : 'Enter Morse code (e.g., .-. . -. -.)';
+
 
 
 
@@ -725,11 +636,7 @@ function setupEventListeners() {
     }
   });
 
-  // Generate random content
-  generateBtn.addEventListener('click', generateRandomContent);
 
-  // Check answer
-  checkAnswerBtn.addEventListener('click', checkAnswer);
 
   // Settings controls
   wpmSlider.addEventListener('input', () => {
@@ -786,6 +693,74 @@ function setupEventListeners() {
     }
   });
 
+  // Helper functions for download
+  function triggerDownload(blob, filename) {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  // Export Audio
+  downloadAudioBtn.addEventListener('click', async () => {
+    const morse = morseOutput.value;
+    if (!morse) { alert('No Morse code to export!'); return; }
+
+    const originalText = downloadAudioBtn.innerHTML;
+    downloadAudioBtn.textContent = translations[currentLang].generatingAudio;
+    try {
+      const blob = await morseEngine.generateWav(morse);
+      if (blob && blob.size > 0) {
+        triggerDownload(blob, 'morse_code.wav');
+      } else {
+        throw new Error("Generated audio file is empty");
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error generating audio: ' + e.message);
+    }
+    downloadAudioBtn.innerHTML = originalText;
+  });
+
+  // Import / Analyze
+  analyzeBtn.addEventListener('click', () => {
+    const file = fileInput.files[0];
+    if (!file) { alert('Please select a file first'); return; }
+
+    uploadStatus.textContent = translations[currentLang].analyzing;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const arrayBuffer = e.target.result;
+        if (file.type.includes('audio') || file.name.toLowerCase().endsWith('.wav') || file.name.toLowerCase().endsWith('.mp3')) {
+          const decodedMorse = await morseEngine.decodeAudioFromBuffer(arrayBuffer);
+          morseOutput.value = decodedMorse;
+          uploadStatus.textContent = translations[currentLang].analysisComplete;
+        } else {
+          uploadStatus.textContent = translations[currentLang].invalidFileType;
+          return;
+        }
+        morseOutput.dispatchEvent(new Event('input'));
+      } catch (err) {
+        console.error(err);
+        uploadStatus.textContent = translations[currentLang].analysisError + err.message;
+      }
+    };
+    reader.onerror = () => {
+      uploadStatus.textContent = "Error reading file";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
 
 
   // Helper functions for download
@@ -830,33 +805,7 @@ function setupEventListeners() {
   });
 
 
-  // Export Video (WebM)
-  downloadVideoBtn.addEventListener('click', async () => {
-    const morse = morseOutput.value;
-    if (!morse) { alert('No Morse code to export!'); return; }
 
-    const originalText = downloadVideoBtn.innerHTML;
-    downloadVideoBtn.textContent = 'Recording...';
-    try {
-      if (typeof morseEngine.exportVideoFromMorse !== 'function') {
-        throw new Error("exportVideoFromMorse function missing");
-      }
-
-      const blob = await morseEngine.exportVideoFromMorse(morse);
-
-      if (blob && blob.size > 0) {
-        triggerDownload(blob, 'morse_video.webm');
-      } else {
-        throw new Error("Generated video file is empty");
-      }
-    } catch (e) {
-      console.error("Video Export Error:", e);
-      alert('Error generating video: ' + e.message + "\n\nNote: Video recording requires running via a local server (http://localhost). It will NOT work on file:// protocol in most browsers.");
-    }
-
-    // Reset button text
-    downloadVideoBtn.innerHTML = originalText;
-  });
 
   // Import / Analyze
   analyzeBtn.addEventListener('click', () => {
@@ -869,17 +818,12 @@ function setupEventListeners() {
     reader.onload = async (e) => {
       try {
         const arrayBuffer = e.target.result;
-        if (file.type.includes('audio')) {
+        if (file.type.includes('audio') || file.name.toLowerCase().endsWith('.wav') || file.name.toLowerCase().endsWith('.mp3')) {
           const decodedMorse = await morseEngine.decodeAudioFromBuffer(arrayBuffer);
           morseOutput.value = decodedMorse;
           uploadStatus.textContent = "Analysis Complete";
         } else {
-          // Still mock for video
-          setTimeout(() => {
-            morseOutput.value = "...- .. -.. . ---"; // VIDEO
-            uploadStatus.textContent = "Video Analysis Simulated";
-            morseOutput.dispatchEvent(new Event('input'));
-          }, 1000);
+          uploadStatus.textContent = "Invalid file type. Please upload an audio file.";
           return;
         }
         // Trigger update
@@ -897,12 +841,7 @@ function setupEventListeners() {
     reader.readAsArrayBuffer(file);
   });
 
-  // Allow Enter key to submit answer
-  answerInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      checkAnswer();
-    }
-  });
+
 }
 
 // Apply theme based on toggle
@@ -914,51 +853,7 @@ function applyTheme() {
   }
 }
 
-// Generate random content for practice
-function generateRandomContent() {
-  // Randomly decide between single letter or word
-  const isWord = Math.random() > 0.5;
 
-  if (isWord) {
-    // Select a random word
-    const randomIndex = Math.floor(Math.random() * sampleWords.length);
-    const word = sampleWords[randomIndex];
-    generatedContent.textContent = word;
-  } else {
-    // Select a random letter
-    const letters = Object.keys(morseEngine.morseMap).filter(char => /[A-Z]/.test(char));
-    const randomIndex = Math.floor(Math.random() * letters.length);
-    const letter = letters[randomIndex];
-    generatedContent.textContent = letter;
-  }
-
-  // Clear previous answer and result
-  answerInput.value = '';
-  resultMessage.textContent = '';
-  resultMessage.className = '';
-}
-
-// Check the user's answer
-function checkAnswer() {
-  const correctContent = generatedContent.textContent.toUpperCase();
-  const userAnswer = answerInput.value.trim();
-
-  // Encode the correct content to compare with user input
-  const correctMorse = morseEngine.encode(correctContent).replace(/\s+/g, '');
-
-  // Normalize user input (remove spaces)
-  const normalizedUserAnswer = userAnswer.replace(/\s+/g, '');
-
-  if (normalizedUserAnswer === correctMorse) {
-    resultMessage.textContent = currentLang === 'tr' ? 'Doğru! Tebrikler!' : 'Correct! Well done!';
-    resultMessage.className = 'result-correct';
-  } else {
-    resultMessage.textContent = currentLang === 'tr'
-      ? `Yanlış. Doğru cevap: ${correctMorse}`
-      : `Incorrect. The correct answer is: ${correctMorse}`;
-    resultMessage.className = 'result-incorrect';
-  }
-}
 
 
 
