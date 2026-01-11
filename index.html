@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Trainer - Learn & Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1 id="mainTitle">Morse Code Trainer - Learn & Practice</h1>
+                <div class="language-toggle">
+                    <button id="langToggleTr" class="lang-btn" data-lang="tr">TR</button>
+                    <button id="langToggleEn" class="lang-btn" data-lang="en">EN</button>
+                </div>
+            </div>
+            <p id="mainDescription">Learn and practice Morse code with interactive tools</p>
+        </header>
+
+
+
+        <!-- ANA MODÜL: Çift Yönlü Çevirici -->
+        <section class="converter-module">
+            <h2 id="converterTitle">Text to Morse Converter</h2>
+            <div class="converter-container">
+                <div class="text-input-container">
+                    <label for="textInput" id="textLabel">Normal Text:</label>
+                    <textarea id="textInput" placeholder="Enter text to convert to Morse code"></textarea>
+                </div>
+                <div class="morse-output-container">
+                    <label for="morseOutput" id="morseLabel">Morse Code:</label>
+                    <textarea id="morseOutput" placeholder="Morse code will appear here" readonly></textarea>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="playSoundBtn" class="secondary"><span class="btn-icon">🔊</span> <span
+                        id="playSoundText">Play Sound</span></button>
+
+            </div>
+        </section>
+
+
+        <!-- IMPORT/EXPORT MODÜLÜ -->
+        <section class="export-module">
+            <h2 id="exportTitle">Import / Export</h2>
+            <div class="controls" style="margin-bottom: 1rem;">
+                <button id="downloadAudioBtn" class="secondary"><span class="btn-icon">🎵</span> <span
+                        id="downloadAudioText">Download Audio (WAV)</span></button>
+                <button id="downloadVideoBtn" class="accent"><span class="btn-icon">🎥</span> <span
+                        id="downloadVideoText">Download Video (WebM)</span></button>
+            </div>
+
+            <div class="upload-container">
+                <label for="fileInput" id="uploadLabel">Upload Audio/Video to Decode:</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept="audio/*,video/*">
+                    <button id="analyzeBtn" class="secondary"><span class="btn-icon">🔍</span> <span
+                            id="analyzeText">Analyze & Decode</span></button>
+                </div>
+                <div id="uploadStatus" class="status-msg"></div>
+            </div>
+        </section>
+
+        <!-- ALIŞTIRMA MODÜLÜ -->
+        <section class="practice-module">
+            <h2 id="practiceTitle">Practice Mode</h2>
+            <div class="practice-container">
+                <div class="random-content">
+                    <p><span id="generatedText">Generated character/word:</span> <span id="generatedContent">-</span>
+                    </p>
+                    <button id="generateBtn" class="secondary"><span class="btn-icon">🎲</span> <span
+                            id="generateBtnText">Generate Random Character/Word</span></button>
+                </div>
+                <div class="answer-section">
+                    <label for="answerInput" id="answerInputLabel">Enter Morse code (use . and -):</label>
+                    <input type="text" id="answerInput" placeholder="Enter Morse code (e.g., .-. . -. -.)">
+                    <button id="checkAnswerBtn" class="secondary"><span class="btn-icon">✅</span> <span
+                            id="checkAnswerText">Check Answer</span></button>
+                    <div id="resultMessage"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REFERANS TABLOSU -->
+        <section class="reference-module">
+            <h2 id="referenceTitle">Morse Code Reference</h2>
+            <div id="morseTableContainer"></div>
+        </section>
+
+        <!-- AYARLAR -->
+        <section class="settings-module">
+            <h2 id="settingsTitle">Settings</h2>
+            <div class="settings-container">
+                <div class="setting-item">
+                    <label for="wpmSlider" id="speedLabel">Speed (WPM): <span id="wpmValue">20</span></label>
+                    <input type="range" id="wpmSlider" min="5" max="50" value="20">
+                </div>
+                <div class="setting-item">
+                    <label for="frequencySlider" id="freqLabel">Frequency (Hz): <span id="freqValue">600</span></label>
+                    <input type="range" id="frequencySlider" min="200" max="1200" value="600">
+                </div>
+                <div class="setting-item">
+                    <label for="vibrationToggle" id="vibrationLabel">Vibration (Mobile):</label>
+                    <input type="checkbox" id="vibrationToggle">
+                </div>
+                <div class="setting-item">
+                    <label for="themeToggle" id="themeLabel">Dark Theme:</label>
+                    <input type="checkbox" id="themeToggle">
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

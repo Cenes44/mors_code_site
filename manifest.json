@@ -1,0 +1,16 @@
+{
+  "name": "Interactive Morse Code Trainer",
+  "short_name": "Morse Trainer",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#3498db",
+  "description": "Learn and practice Morse code with interactive tools",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
