@@ -1,147 +1,93 @@
-# Interactive Morse Code Trainer
+# 📡 Mors Kodu Eğitmeni & Dönüştürücü
 
-An interactive web application to learn and practice Morse code. Built with vanilla HTML5, CSS3, and JavaScript ES6+ using the Web Audio API for sound generation.
+![Lisans](https://img.shields.io/badge/lisans-MIT-blue.svg)
+![Sürüm](https://img.shields.io/badge/sürüm-1.0.0-green.svg)
+![Durum](https://img.shields.io/badge/durum-Yayında-success.svg)
 
-## Live Demo
- *(Link will be available once deployed)*
+Mors kodunu öğrenmek, pratik yapmak ve dönüştürmek için tasarlanmış modern, etkileşimli bir "Progressive Web App" (PWA) uygulaması. Saf JavaScript (Vanilla JS) ile geliştirilen bu araç; çift yönlü çeviri, sesli oynatma/dışa aktarma, ses analizi ve özel pratik modu sunar.
 
-## Features
+## ✨ Özellikler
 
-- **Bidirectional Text/Morse Converter**: Instantly convert between text and Morse code
-- **Interactive Practice Mode**: Generate random letters/words to practice decoding
-- **Morse Code Reference Table**: Complete reference with clickable characters
-- **Audio Playback**: Listen to Morse code with adjustable speed and frequency
-- **Visual Flashing**: Visual representation of Morse code with flashing animation
-- **Keyboard Shortcuts**: Use Space/Dot for (.) and Dash/Hyphen for (-)
-- **Adjustable Settings**: Control speed (WPM), frequency, and vibration
-- **Responsive Design**: Works on mobile, tablet, and desktop devices
-- **PWA Support**: Installable on mobile devices for offline use
-- **Dark/Light Theme**: Toggle between dark and light themes
+- **Çift Yönlü Dönüştürme:** Metinden Morsa ve Morstan Metne gerçek zamanlı çeviri.
+- **Sesli & Görsel Geri Bildirim:**
+  - Ayarlanabilir frekans ve hız (WPM) ile yüksek hassasiyetli ses oynatma.
+  - 🎵 **Dışa Aktar (WAV):** Mors kodunuzu yüksek kaliteli WAV ses dosyası olarak indirin.
+  - 🎥 **Dışa Aktar (Video):** Mors kodunuzun görselleştirilmiş videosunu (WebM) oluşturun.
+- **İçe Aktar & Çöz:** Ses dosyalarını (WAV/MP3) yükleyerek Mors sinyallerini analiz edin ve metne çevirin.
+- **Pratik Modu:** Becerilerinizi test etmek için rastgele harf veya kelimeler üretin.
+- **PWA Desteği:** Mobil ve masaüstü cihazlara kurulabilir, çevrimdışı çalışabilir.
+- **Kişiselleştirilebilir:**
+  - Ayarlanabilir WPM (Dakikadaki Kelime Sayısı).
+  - Ayarlanabilir Ses Frekansı (Ton).
+  - Karanlık/Aydınlık (Dark/Light) tema desteği.
+  - Türkçe ve İngilizce dil desteği.
 
-## Technologies Used
+## 🚀 Demo
 
-- HTML5
-- CSS3 (with custom properties and responsive design)
-- JavaScript ES6+
-- Web Audio API for sound generation
-- Vibration API for tactile feedback
-- LocalStorage for saving user preferences
-- Service Workers for PWA functionality
+[Canlı Demo Bağlantısı](https://cenes44.github.io/mors_code_site/)
 
-## Getting Started
+## 🛠️ Kullanım
 
-### Prerequisites
+### Metinden Morsa (ve Tersi)
+1. **Normal Metin** kutusuna yazınız.
+2. **Mors Kodu** kutusu anında güncellenir.
+3. **Ses Çal** butonuna basarak diziyi dinleyebilirsiniz.
+4. **Ses İndir (WAV)** butonu ile sesi bilgisayarınıza kaydedebilirsiniz.
 
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- No external dependencies or build tools required
+### İçe Aktar / Analiz
+1. **İçe / Dışa Aktar** bölümüne gidin.
+2. Bir Mors kodu ses dosyası seçin.
+3. **Analiz Et ve Çöz** butonuna tıklayın.
 
-### Installation
+### Pratik Modu
+1. **Rastgele Karakter/Kelime Üret** butonuna tıklayın.
+2. Çıkan sesi dinleyin veya metni çevirmeye çalışın.
+3. Cevabınızı yazıp kontrol edin!
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/morse-code-trainer.git
-```
+## 💻 Teknolojiler
 
-2. Navigate to the project directory:
-```bash
-cd morse-code-trainer
-```
+- **Çekirdek:** HTML5, CSS3, JavaScript (ES6+)
+- **Ses:** Web Audio API (Dışa aktarım için OfflineAudioContext, Gerçek zamanlı analiz)
+- **PWA:** Service Workers, Manifest
+- **Stil:** CSS3 Değişkenleri, Flexbox/Grid, Responsive Tasarım, Glassmorphism
 
-3. Open `index.html` in your web browser
+## 📦 Kurulum & Çalıştırma
 
-### Manual Setup
+1. **Depoyu klonlayın:**
+   ```bash
+   git clone https://github.com/Cenes44/mors_code_site.git
+   cd mors_code_site
+   ```
 
-Alternatively, you can download the files directly:
+2. **Yerel olarak çalıştırın:**
+   Bu proje gelişmiş tarayıcı özellikleri (AudioContext, Workers) kullandığı için bir yerel sunucu gerektirir.
+   
+   Python kullanarak:
+   ```bash
+   python -m http.server 8080
+   ```
+   
+   Node (http-server) kullanarak:
+   ```bash
+   npx http-server .
+   ```
 
-1. Download the ZIP file from the repository
-2. Extract the contents
-3. Open `index.html` in your web browser
+3. **Tarayıcıda Açın:**
+   `http://localhost:8080` adresine gidin.
 
-## How to Use
+## 🤝 Katkıda Bulunma
 
-### Text to Morse Conversion
+Katkılarınız, hata bildirimleriniz ve özellik istekleriniz memnuniyetle karşılanır!
 
-1. Type text in the "Normal Text" field
-2. See the corresponding Morse code appear in the "Morse Code" field
-3. Click "Play Sound" to hear the Morse code
-4. Click "Flash Light" to see a visual representation
+1. Projeyi Fork'layın
+2. Yeni bir özellik dalı (Feature Branch) oluşturun (`git checkout -b ozellik/HarikaOzellik`)
+3. Değişikliklerinizi Commit'leyin (`git commit -m 'HarikaOzellik eklendi'`)
+4. Dalınıza Push edin (`git push origin ozellik/HarikaOzellik`)
+5. Bir Pull Request açın
 
-### Morse to Text Conversion
+## 📝 Lisans
 
-1. Type Morse code in the "Morse Code" field using dots (.) and dashes (-)
-2. See the corresponding text appear in the "Normal Text" field
+Bu proje MIT Lisansı altında dağıtılmaktadır. Daha fazla bilgi için `LICENSE` dosyasına bakın.
 
-### Practice Mode
-
-1. Click "Generate Random Character/Word" to get a random item to decode
-2. Enter the Morse code equivalent in the input field
-3. Click "Check Answer" to see if your answer is correct
-
-### Keyboard Shortcuts
-
-- **.** or **Space**: Play Dot (.)
-- **-** or **_**: Play Dash (-)
-
-### Settings
-
-- Adjust the speed (WPM) to control how fast the Morse code plays
-- Change the frequency (Hz) to adjust the pitch of the tones
-- Enable/disable vibration for tactile feedback
-- Toggle between dark and light themes
-
-## Project Structure
-
-```
-morse-code-trainer/
-├── index.html          # Main HTML file with all modules
-├── style.css           # Responsive CSS with modern design
-├── script.js           # Core JavaScript functionality
-├── sw.js               # Service worker for PWA
-├── manifest.json       # PWA manifest file
-├── icons/              # Icon files for PWA
-│   ├── icon-192.png
-│   └── icon-512.png
-└── README.md           # This file
-```
-
-## Browser Compatibility
-
-- Chrome 55+ (Web Audio API support)
-- Firefox 53+ (Web Audio API support)
-- Safari 11+ (Web Audio API support)
-- Edge 79+ (Web Audio API support)
-
-Note: Vibration API is only available on mobile devices and some browsers.
-
-## Future Enhancements
-- Add statistics and progress tracking
-- Implement multiplayer or social features
-- Add more visual themes and customization options
-- Create lessons for beginners to advanced users
-
-## Contributing
-
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## License
-MIT
-
-## Acknowledgments
-- Morse code reference based on international standards
-
-## Development Notes
-
-This project was built with the following principles:
-
-- Pure client-side functionality (no server required)
-- All resources included in the project (no external CDN dependencies)
-- Optimized for GitHub Pages deployment
-- Mobile-first responsive design
-- Progressive Web App capabilities
-- Accessible interface design
+---
+**[Cenes44](https://github.com/Cenes44) tarafından ❤️ ile geliştirilmiştir.**
